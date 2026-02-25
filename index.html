@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sandra | Gestão de Limpezas Airbnb</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bibliotecas para gerar PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Bibliotecas para gerar PDF Nativo (Textos Selecionáveis) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <style>
@@ -64,23 +65,6 @@
             background: var(--primary-light);
             box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
         }
-
-        /* Molde do Documento para PDF (Design Clean & Premium) */
-        #report-template {
-            width: 800px;
-            padding: 50px;
-            background: #ffffff;
-            position: absolute;
-            left: -9999px;
-            top: 0;
-            color: #1e293b;
-        }
-        .report-header { border-bottom: 2px solid var(--primary); padding-bottom: 25px; margin-bottom: 30px; }
-        .grid-report { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; row-gap: 15px; }
-        .report-category { grid-column: 1 / -1; font-family: 'Playfair Display', serif; font-size: 18px; color: var(--primary); border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-top: 24px; margin-bottom: 8px; }
-        .report-label { font-weight: 700; color: #64748b; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
-        .report-value { font-size: 15px; color: #0f172a; margin-bottom: 12px; word-wrap: break-word; line-height: 1.4; }
-        .full-width-item { grid-column: 1 / -1; }
     </style>
 </head>
 <body class="pb-24">
@@ -455,28 +439,6 @@
         </div>
     </div>
 
-    <!-- Template do Relatório (Invisível) -->
-    <div id="report-template">
-        <div class="report-header">
-            <div style="color: #ef4444; font-weight: 800; font-size: 13px; text-align: center; border: 2px dashed #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 25px; letter-spacing: 0.5px;">
-                 DOCUMENTO VÁLIDO APENAS SE ENVIADO PARA SANDRA: (21) 96929-3505
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                <div>
-                    <h1 id="report-title" style="font-family: 'Playfair Display', serif; font-size: 28px; margin: 0; color: #0f172a;">Ficha Técnica do Imóvel</h1>
-                    <p id="report-subtitle" style="color: #0d9488; font-weight: bold; font-size: 14px; margin-top: 4px;">Sandra | Hospitalidade & Limpeza</p>
-                </div>
-                <div id="report-date" style="text-align: right; color: #64748b; font-size: 13px; font-weight: 500;"></div>
-            </div>
-        </div>
-        <div id="report-body" class="grid-report">
-            <!-- Conteúdo Dinâmico -->
-        </div>
-        <div style="margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center; color: #94a3b8; font-size: 12px;">
-            Documento gerado digitalmente para garantir o padrão de qualidade e hospitalidade.
-        </div>
-    </div>
-
     <!-- Modal de Carregamento & Sucesso (Estilo WhatsApp Share) -->
     <div id="loading-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex flex-col items-center justify-center p-6 text-white text-center">
         <div id="loading-state" class="flex flex-col items-center">
@@ -635,6 +597,24 @@
             { titulo: "Notas Especiais", campos: ['obs_agendamento'] }
         ];
 
+        const labelsMap = {
+            'cep': 'CEP', 'rua': 'Logradouro', 'bairro': 'Bairro', 'cidade': 'Cidade/UF', 'numero': 'Nº', 'complemento': 'Complemento',
+            'edificio': 'Edifício/Condomínio', 'proprietario': 'Responsável', 'configuracao': 'Configuração do imóvel',
+            'aspirador': 'Aspirador / Voltagem', 'materiais_basicos': 'Vassoura/Rodo/Balde', 'produtos_instrucao': 'Instruções de Produtos',
+            'proibidos': ' PROIBIDO USAR', 'ventiladores': 'Ventiladores', 'guarda_enxoval': 'Onde guardar limpos',
+            'roupa_suja': 'Onde deixar sujos', 'montagem_camas': 'Padrão de camas', 'amenities': 'Amenities e Reposição',
+            'toalhas_posicao': 'Toalhas limpas', 'sobras_geladeira': 'Sobras na geladeira', 'sujeira_extrema': 'Acordo sobre Sujeira Extrema',
+            'equip': 'Eletrodomésticos', 'equip_outros': 'Outros Equipamentos', 'quantidades_louca': 'Quantidades (Pratos/Talheres)',
+            'cozinha_extras': 'Detalhes Extras', 'mimos': 'Localização Mimos', 'fechamento': 'Regras de Fechamento',
+            'lixo_descarte': 'Descarte do Lixo', 'obs_finais': 'Observações Gerais',
+            'cliente_tipo': 'Já tem Ficha?', 'condominio_torre': 'Condomínio e Apto', 'data_limpeza': 'Data Limpeza',
+            'horario_limpeza': 'Horário Limpeza', 'tem_checkin': 'Novos hóspedes hoje?', 'horario_checkin': 'Horário Check-in',
+            'entrada_metodo': 'Como será a entrada?', 'num_pessoas': 'Qtd. Pessoas', 'toalhas_reserva': 'Toalhas Banho/Rosto',
+            'camas_preparo': 'Preparo de Camas/Cobertores', 'reposicao_banho': 'Reposição Banheiro', 'reposicao_mimos': 'Reposição Mimos',
+            'obs_agendamento': 'Pedido Especial'
+        };
+
+        // Função para gerar o PDF nativo usando pdfmake
         async function generateReport(type) {
             const modal = document.getElementById('loading-modal');
             const loadState = document.getElementById('loading-state');
@@ -644,49 +624,100 @@
             loadState.classList.remove('hidden');
             successState.classList.add('hidden');
 
-            const body = document.getElementById('report-body');
-            const title = document.getElementById('report-title');
-            const subtitle = document.getElementById('report-subtitle');
-            const dateEl = document.getElementById('report-date');
-            
-            body.innerHTML = '';
             const formId = type === 'ficha' ? 'form-ficha' : 'form-agenda';
             const formData = new FormData(document.getElementById(formId));
             
-            dateEl.innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
+            const dataGeracao = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
+            let pdfTitle = '';
+            let pdfSubtitle = '';
+
             if(type === 'ficha') {
-                title.innerText = 'Ficha Técnica do Imóvel';
-                subtitle.innerText = `Propriedade: ${formData.get('proprietario') || 'Não informada'}`;
+                pdfTitle = 'Ficha Técnica do Imóvel';
+                pdfSubtitle = `Propriedade: ${formData.get('proprietario') || 'Não informada'}`;
             } else {
-                title.innerText = 'Solicitação de Serviço';
+                pdfTitle = 'Solicitação de Serviço';
                 let checkinData = formData.get('data_limpeza') ? new Date(formData.get('data_limpeza')).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '-';
                 let hrLimpeza = formData.get('horario_limpeza') || 'A combinar';
-                subtitle.innerText = `Data: ${checkinData} | Horário: ${hrLimpeza}`;
+                pdfSubtitle = `Data: ${checkinData} | Horário: ${hrLimpeza}`;
             }
 
-            const labelsMap = {
-                'cep': 'CEP', 'rua': 'Logradouro', 'bairro': 'Bairro', 'cidade': 'Cidade/UF', 'numero': 'Nº', 'complemento': 'Complemento',
-                'edificio': 'Edifício/Condomínio', 'proprietario': 'Responsável', 'configuracao': 'Configuração do imóvel',
-                'aspirador': 'Aspirador / Voltagem', 'materiais_basicos': 'Vassoura/Rodo/Balde', 'produtos_instrucao': 'Instruções de Produtos',
-                'proibidos': ' PROIBIDO USAR', 'ventiladores': 'Ventiladores', 'guarda_enxoval': 'Onde guardar limpos',
-                'roupa_suja': 'Onde deixar sujos', 'montagem_camas': 'Padrão de camas', 'amenities': 'Amenities e Reposição',
-                'toalhas_posicao': 'Toalhas limpas', 'sobras_geladeira': 'Sobras na geladeira', 'sujeira_extrema': 'Acordo sobre Sujeira Extrema',
-                'equip': 'Eletrodomésticos', 'equip_outros': 'Outros Equipamentos', 'quantidades_louca': 'Quantidades (Pratos/Talheres)',
-                'cozinha_extras': 'Detalhes Extras', 'mimos': 'Localização Mimos', 'fechamento': 'Regras de Fechamento',
-                'lixo_descarte': 'Descarte do Lixo', 'obs_finais': 'Observações Gerais',
-                'cliente_tipo': 'Já tem Ficha?', 'condominio_torre': 'Condomínio e Apto', 'data_limpeza': 'Data Limpeza',
-                'horario_limpeza': 'Horário Limpeza', 'tem_checkin': 'Novos hóspedes hoje?', 'horario_checkin': 'Horário Check-in',
-                'entrada_metodo': 'Como será a entrada?', 'num_pessoas': 'Qtd. Pessoas', 'toalhas_reserva': 'Toalhas Banho/Rosto',
-                'camas_preparo': 'Preparo de Camas/Cobertores', 'reposicao_banho': 'Reposição Banheiro', 'reposicao_mimos': 'Reposição Mimos',
-                'obs_agendamento': 'Pedido Especial'
+            // Definição da estrutura nativa do PDF (pdfmake)
+            const docDefinition = {
+                pageSize: 'A4',
+                pageMargins: [40, 50, 40, 50],
+                styles: {
+                    header: { fontSize: 22, bold: true, color: '#0f172a', margin: [0, 0, 0, 4] },
+                    subheader: { fontSize: 12, bold: true, color: '#0d9488', margin: [0, 0, 0, 20] },
+                    alertBox: { fontSize: 10, bold: true, color: '#ef4444', alignment: 'center', margin: [0, 8, 0, 8] },
+                    categoryTitle: { fontSize: 14, bold: true, color: '#0d9488', margin: [0, 20, 0, 6] },
+                    fieldLabel: { fontSize: 9, bold: true, color: '#64748b', margin: [0, 0, 0, 3] },
+                    fieldValue: { fontSize: 11, color: '#0f172a', margin: [0, 0, 0, 12], lineHeight: 1.2 },
+                    fieldValueProibido: { fontSize: 11, bold: true, color: '#dc2626', margin: [0, 0, 0, 12], lineHeight: 1.2 },
+                    footerText: { fontSize: 9, color: '#94a3b8', alignment: 'center', margin: [0, 20, 0, 0] }
+                },
+                content: [
+                    // Caixa Vermelha de Alerta
+                    {
+                        table: {
+                            widths: ['*'],
+                            body: [
+                                [{ text: 'DOCUMENTO VÁLIDO APENAS SE ENVIADO PARA SANDRA: (21) 96929-3505', style: 'alertBox' }]
+                            ]
+                        },
+                        layout: {
+                            hLineWidth: function() { return 1.5; },
+                            vLineWidth: function() { return 1.5; },
+                            hLineColor: function() { return '#ef4444'; },
+                            vLineColor: function() { return '#ef4444'; },
+                            hLineStyle: function() { return {dash: {length: 4, space: 4}}; },
+                            vLineStyle: function() { return {dash: {length: 4, space: 4}}; }
+                        },
+                        margin: [0, 0, 0, 25]
+                    },
+                    // Título e Data
+                    {
+                        columns: [
+                            {
+                                width: '*',
+                                text: [
+                                    { text: pdfTitle + '\n', style: 'header' },
+                                    { text: pdfSubtitle, style: 'subheader' }
+                                ]
+                            },
+                            {
+                                width: 'auto',
+                                text: dataGeracao,
+                                alignment: 'right',
+                                color: '#64748b',
+                                fontSize: 10,
+                                margin: [0, 10, 0, 0]
+                            }
+                        ],
+                        margin: [0, 0, 0, 10]
+                    },
+                    // Linha divisória fina embaixo do título
+                    {
+                        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2, lineColor: '#0d9488' }],
+                        margin: [0, 0, 0, 10]
+                    }
+                ],
+                // Rodapé Dinâmico
+                footer: function(currentPage, pageCount) {
+                    return {
+                        text: 'Documento gerado digitalmente para garantir o padrão de qualidade e hospitalidade. Página ' + currentPage.toString() + ' de ' + pageCount,
+                        style: 'footerText'
+                    };
+                }
             };
 
             const categorias = type === 'ficha' ? FICHA_CATEGORIAS : AGENDA_CATEGORIAS;
 
+            // Montando o corpo das respostas no PDF
             categorias.forEach(cat => {
-                let fieldsHTML = '';
+                let catFieldsHtml = [];
+                let currentRow = [];
                 let hasData = false;
-                
+
                 cat.campos.forEach(campo => {
                     let val = '';
                     if(campo === 'equip') {
@@ -699,84 +730,83 @@
                     
                     if(val && val.trim() !== "") {
                         hasData = true;
-                        const isLongText = val.length > 60 || campo === 'equip' || campo === 'montagem_camas';
-                        const colClass = isLongText ? 'full-width-item' : '';
-                        const colorStyle = campo === 'proibidos' ? 'color: #dc2626; font-weight: bold;' : '';
+                        const isLongText = val.length > 50 || campo === 'equip' || campo === 'montagem_camas';
+                        const styleName = campo === 'proibidos' ? 'fieldValueProibido' : 'fieldValue';
+                        const labelText = (labelsMap[campo] || campo).toUpperCase();
                         
-                        fieldsHTML += `
-                        <div class="${colClass}">
-                            <p class="report-label">${labelsMap[campo] || campo}</p>
-                            <p class="report-value" style="${colorStyle}">${val.replace(/\n/g, '<br>')}</p>
-                        </div>`;
+                        const block = [
+                            { text: labelText, style: 'fieldLabel' },
+                            { text: val.replace(/\n/g, '\n'), style: styleName }
+                        ];
+
+                        if (isLongText) {
+                            // Se a linha atual tiver algo, empurra ela pro array principal antes do item longo
+                            if (currentRow.length > 0) {
+                                catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
+                                currentRow = [];
+                            }
+                            catFieldsHtml.push({ stack: block, margin: [0, 0, 0, 5] });
+                        } else {
+                            // Textos curtos dividem o espaço em 2 colunas
+                            currentRow.push({ stack: block, width: '*' });
+                            if (currentRow.length === 2) {
+                                catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
+                                currentRow = [];
+                            }
+                        }
                     }
                 });
 
+                // Se sobrou algum item sozinho na linha curta, fecha ela
+                if (currentRow.length > 0) {
+                    currentRow.push({ text: '', width: '*' }); // coluna fantasma para alinhar
+                    catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
+                }
+
+                // Se essa categoria teve respostas, joga no PDF
                 if(hasData) {
-                    body.innerHTML += `<div class="report-category">${cat.titulo}</div>` + fieldsHTML;
+                    docDefinition.content.push({ text: cat.titulo, style: 'categoryTitle' });
+                    docDefinition.content.push({
+                        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, lineColor: '#e2e8f0' }],
+                        margin: [0, 0, 0, 12]
+                    });
+                    docDefinition.content = docDefinition.content.concat(catFieldsHtml);
                 }
             });
 
             try {
-                // Aguarda renderização DOM
-                await new Promise(r => setTimeout(r, 300));
-                
-                // 1. Tira a "foto" da formatação usando html2canvas (Scale 3 é suficiente p/ alta nitidez em PDF)
-                const template = document.getElementById('report-template');
-                const canvas = await html2canvas(template, { scale: 3, useCORS: true, logging: false });
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                // Pequeno delay visual para UX
+                await new Promise(r => setTimeout(r, 600));
 
-                // 2. Transforma essa foto perfeitamente nas dimensões A4 em PDF usando jsPDF
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth(); // A4 Width
-                const pageHeight = pdf.internal.pageSize.getHeight(); // A4 Height
-                
-                // Calcula a altura da imagem para caber na largura do A4 proporcionalmente
-                const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = 0;
+                // GERA O PDF NATIVO
+                pdfMake.createPdf(docDefinition).getBlob(async (blob) => {
+                    const file = new File([blob], `Sandra_${type}_${Date.now()}.pdf`, { type: 'application/pdf' });
 
-                // Adiciona a primeira página
-                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-                heightLeft -= pageHeight;
+                    loadState.classList.add('hidden');
+                    successState.classList.remove('hidden');
 
-                // Se o formulário for longo, adiciona mais páginas cortando perfeitamente a imagem
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-
-                // 3. Obtem o arquivo final como PDF
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], `Sandra_${type}_${Date.now()}.pdf`, { type: 'application/pdf' });
-
-                loadState.classList.add('hidden');
-                successState.classList.remove('hidden');
-
-                // 4. Lógica de Envio por WhatsApp
-                document.getElementById('btn-final-share').onclick = async () => {
-                    // Verifica se o aparelho suporta envio do arquivo (ex: Safari iOS, Chrome Android modernos)
-                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: `Documento Sandra - ${type.toUpperCase()}`,
-                                text: `Olá Sandra! Segue o meu documento gerado em PDF.\n *Documento válido apenas se enviado para (21) 96929-3505*`
-                            });
-                        } catch (err) {
-                            console.log("Compartilhamento cancelado ou falhou", err);
+                    document.getElementById('btn-final-share').onclick = async () => {
+                        // Verifica se o aparelho suporta envio do arquivo direto (celulares modernos)
+                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                            try {
+                                await navigator.share({
+                                    files: [file],
+                                    title: `Documento Sandra - ${type.toUpperCase()}`,
+                                    text: `Olá Sandra! Segue o meu documento gerado em PDF.\n*Documento válido apenas se enviado para (21) 96929-3505*`
+                                });
+                            } catch (err) {
+                                console.log("Compartilhamento cancelado ou falhou", err);
+                            }
+                        } else {
+                            // Se estiver no PC ou navegador não compatível com envio direto, baixa o arquivo
+                            const link = document.createElement('a');
+                            link.download = `Sandra_Documento_${type}.pdf`;
+                            link.href = URL.createObjectURL(blob);
+                            link.click();
+                            alert("O seu dispositivo não suporta o envio direto por este botão. O PDF foi baixado no seu dispositivo, por favor envie-o como anexo para a Sandra no WhatsApp.");
                         }
-                    } else {
-                        // Fallback (Computadores e navegadores antigos baixarão o PDF automaticamente)
-                        const link = document.createElement('a');
-                        link.download = `Sandra_Documento_${type}.pdf`;
-                        link.href = URL.createObjectURL(pdfBlob);
-                        link.click();
-                        alert("O seu dispositivo não suporta o envio direto. O PDF foi baixado automaticamente, por favor envie-o como anexo para a Sandra no WhatsApp.");
-                    }
-                };
+                    };
+                });
             } catch (err) {
                 console.error("Erro ao gerar PDF", err);
                 closeModal();
@@ -786,3 +816,5 @@
     </script>
 </body>
 </html>
+
+
