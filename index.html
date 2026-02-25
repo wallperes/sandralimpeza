@@ -725,7 +725,7 @@
             try {
                 await new Promise(r => setTimeout(r, 300));
                 const template = document.getElementById('report-template');
-                const canvas = await html2canvas(template, { scale: 5, useCORS: true, logging: false });
+                const canvas = await html2canvas(template, { scale: 10, useCORS: true, logging: false });
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const file = new File([blob], `Sandra_${type}_${Date.now()}.png`, { type: 'image/png' });
 
