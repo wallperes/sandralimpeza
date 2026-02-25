@@ -182,7 +182,7 @@
                             <textarea name="materiais_basicos" rows="2" class="input-base"></textarea>
                         </div>
                         <div class="group">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Sobre os produtos de limpeza: prefere que eu use o meu kit ou você fornece? Se você deixa os produtos, há alguma instrução especial de como gosta que os use?</label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Sobre os produtos de limpeza: prefere que eu use o meu kit ou você fornece? Se você deixa os produtos, há alguma instrução especial de como gosta que os use? Ex: 'Tenho um Cheirinho de Ambiente específico que deixo aí. Peço que passe o spray nas roupas de cama e cortinas'</label>
                             <textarea name="produtos_instrucao" rows="2" class="input-base"></textarea>
                         </div>
                         <div class="bg-red-50 p-4 rounded-xl border border-red-100">
@@ -265,11 +265,11 @@
                             </div>
                         </div>
                         <div class="group">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Você deixa um número exato de pratos, copos e talheres? Se sim, me passa as quantidades para eu conferir: </label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Para a gente manter o controle: você deixa um número exato de pratos, copos e talheres (facas, garfos, colheres de sopa e de sobremesa)? Se sim, me passa as quantidades para eu conferir na hora da limpeza e te avisar se faltar algo! 🍽️</label>
                             <input type="text" name="quantidades_louca" class="input-base">
                         </div>
                         <div class="group">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tem mais algum detalhe na cozinha que eu deva deixar para os hóspedes (sal, açúcar) ou algo que queira me contar?</label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tem mais algum detalhe na cozinha que eu deva deixar para os hóspedes (sal, açucar) ou algo que queira me contar?</label>
                             <textarea name="cozinha_extras" rows="2" class="input-base"></textarea>
                         </div>
                     </div>
@@ -301,11 +301,11 @@
                             <input type="text" name="mimos" class="input-base">
                         </div>
                         <div class="group">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Ao terminar e fechar a porta, como devo deixar o ambiente? (Ex: cortinas abertas/fechadas, luzes) </label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Ao terminar e fechar a porta, como devo deixar o ambiente? (Ex: cortinas abertas ou fechadas, luzes acessas ou apagadas?) 🌬️</label>
                             <textarea name="fechamento" rows="2" class="input-base"></textarea>
                         </div>
                         <div class="group">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Onde eu faço o descarte final de todo o lixo aí no prédio? </label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Onde eu faço o descarte final de todo o lixo aí no prédio? 🗑️</label>
                             <input type="text" name="lixo_descarte" class="input-base">
                         </div>
                         <div class="group">
@@ -356,7 +356,7 @@
                 
                 <div class="grid grid-cols-2 gap-3">
                     <div class="group">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Qual a data? </label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Qual é a data gostaria de reservar? 🗓️✅</label>
                         <input type="date" name="data_limpeza" class="input-base text-slate-600">
                     </div>
                     <div class="group">
@@ -383,39 +383,37 @@
                 </div>
 
                 <div class="group">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Como vai ser a minha entrada no dia dessa limpeza?  (Chave na portaria, senha...)</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Como vai ser a minha entrada no dia dessa limpeza? 🔑 (Chave na portaria, senha na porta, cofre...) e se for senha, qual a senha?</label>
                     <textarea name="entrada_metodo" rows="2" class="input-base"></textarea>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="group">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Quantas pessoas na reserva? </label>
-                        <input type="number" name="num_pessoas" class="input-base">
-                    </div>
-                    <div class="group">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Toalhas banho/rosto? </label>
-                        <input type="text" name="toalhas_reserva" class="input-base">
-                    </div>
+                <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Quantas pessoas entram nessa reserva? 👥 (Pergunto só para eu ter uma ideia do que será necessário preparar)</label>
+                    <input type="number" name="num_pessoas" class="input-base">
+                </div>
+                
+                <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Quantas toalhas de banho e de rosto eu devo separar no total? 🛁</label>
+                    <input type="text" name="toalhas_reserva" class="input-base">
                 </div>
 
                 <div class="group">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Quantas camas preparo? Travesseiros? Cobertores? (Detalhe roupas de cama) </label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Quantas camas eu preciso preparar dessa vez? E deixo quantos travesseiros e cobertores? Peço que me fale tudo sobre as roupas de cama, incluindo se devo usar cobre leitos, edredoms, etc 🛏️</label>
                     <textarea name="camas_preparo" rows="2" class="input-base"></textarea>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="group">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Papel hig., shampoo? </label>
-                        <input type="text" name="reposicao_banho" class="input-base">
-                    </div>
-                    <div class="group">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Mimos (chocolates)? </label>
-                        <input type="text" name="reposicao_mimos" class="input-base">
-                    </div>
+                <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Quantos rolos de papel higiênico, sabonetes e shampoos eu devo deixar no total? 🧻🧴</label>
+                    <input type="text" name="reposicao_banho" class="input-base">
+                </div>
+                
+                <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tem algum 'mimo' especial para essa reserva (chocolates, biscoitos, cápsulas de café)? Quantos eu deixo preparados? 🍬</label>
+                    <input type="text" name="reposicao_mimos" class="input-base">
                 </div>
 
                 <div class="group">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Deseja acrescentar alguma observação importante ou pedido especial para essa limpeza? </label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Para fecharmos a solicitação: deseja acrescentar alguma observação importante ou pedido especial para essa limpeza que ainda não conversamos? Pode me falar que dependendo do que for eu tento verificar! 😉✨</label>
                     <textarea name="obs_agendamento" rows="2" class="input-base"></textarea>
                 </div>
 
@@ -816,5 +814,3 @@
     </script>
 </body>
 </html>
-
-
