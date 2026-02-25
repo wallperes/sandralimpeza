@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -369,6 +369,22 @@
                     <p class="text-xs text-blue-800 leading-relaxed"> <strong>Aviso:</strong> É desejável dispor de 3 horas para uma limpeza com nosso padrão de qualidade. No entanto, é possível realizar em 2 horas caso seja necessário.</p>
                 </div>
 
+                <!-- NOVA PERGUNTA: CHECK-OUT -->
+                <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tem hóspedes saindo no mesmo dia da faxina (check-out)?</label>
+                    <select name="tem_checkout" onchange="toggleCheckout(this.value)" class="input-base bg-white">
+                        <option value="Não">Não, o apartamento já está vazio</option>
+                        <option value="Sim">Sim, saem no mesmo dia</option>
+                    </select>
+                </div>
+
+                <!-- CAMPO ESCONDIDO: HORÁRIO CHECK-OUT -->
+                <div id="checkout-time-box" class="hidden animate-fade-in group">
+                    <label class="block text-sm font-bold text-teal-600 mb-2">Qual é o horário limite de saída (check-out) dos hóspedes anteriores?</label>
+                    <input type="text" name="horario_checkout" placeholder="Ex: 11:00" class="input-base border-teal-200 focus:border-teal-500 bg-teal-50/30">
+                </div>
+
+                <!-- PERGUNTA EXISTENTE: CHECK-IN -->
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Entrarão novos hóspedes no mesmo dia dessa solicitação de limpeza? </label>
                     <select name="tem_checkin" onchange="toggleCheckin(this.value)" class="input-base bg-white">
@@ -391,6 +407,12 @@
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Quantas pessoas entram nessa reserva? 👥 (Pergunto só para eu ter uma ideia do que será necessário preparar)</label>
                     <input type="number" name="num_pessoas" class="input-base">
                 </div>
+
+                <!-- NOVA PERGUNTA: ANIMAL DE ESTIMAÇÃO -->
+                <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Houve algum animal de estimação hospedado na última reserva? (Se sim, isso me ajuda a planejar tempo extra para o seu imóvel).</label>
+                    <input type="text" name="teve_pet" placeholder="Ex: Não / Sim, um cachorro" class="input-base">
+                </div>
                 
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Quantas toalhas de banho e de rosto eu devo separar no total? 🛁</label>
@@ -410,6 +432,12 @@
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Tem algum 'mimo' especial para essa reserva (chocolates, biscoitos, cápsulas de café)? Quantos eu deixo preparados? 🍬</label>
                     <input type="text" name="reposicao_mimos" class="input-base">
+                </div>
+
+                <!-- NOVA PERGUNTA: VÍDEO PROVA DE LIMPEZA -->
+                <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Ao final, sempre faço um vídeo de “Prova de Limpeza” para te blindar contra falsas reclamações. Tem algum detalhe que algum hóspede já usou no passado para pedir desconto e que você quer que eu foque na filmagem para sua tranquilidade?</label>
+                    <textarea name="foco_video" rows="2" class="input-base"></textarea>
                 </div>
 
                 <div class="group">
@@ -526,6 +554,8 @@
         }
 
         function toggleCheckin(val) { document.getElementById('checkin-time-box').classList.toggle('hidden', val !== 'Sim'); }
+        // Nova função para toggle do checkout
+        function toggleCheckout(val) { document.getElementById('checkout-time-box').classList.toggle('hidden', val !== 'Sim'); }
 
         async function checkCep(cep) {
             try {
@@ -570,6 +600,7 @@
                 } else { input.value = data[key]; }
             });
             if(data.tem_checkin === 'Sim') toggleCheckin('Sim');
+            if(data.tem_checkout === 'Sim') toggleCheckout('Sim');
         }
 
         function closeModal() {
@@ -587,12 +618,13 @@
             { titulo: "Finalização e Detalhes", campos: ['sujeira_extrema', 'mimos', 'fechamento', 'lixo_descarte', 'obs_finais'] }
         ];
 
+        // Atualizado com os novos campos
         const AGENDA_CATEGORIAS = [
-            { titulo: "Informações Gerais e Horários", campos: ['cliente_tipo', 'condominio_torre', 'data_limpeza', 'horario_limpeza', 'tem_checkin', 'horario_checkin', 'num_pessoas'] },
+            { titulo: "Informações Gerais e Horários", campos: ['cliente_tipo', 'condominio_torre', 'data_limpeza', 'horario_limpeza', 'tem_checkout', 'horario_checkout', 'tem_checkin', 'horario_checkin', 'num_pessoas', 'teve_pet'] },
             { titulo: "Acesso e Segurança", campos: ['entrada_metodo'] },
             { titulo: "Enxoval e Preparação", campos: ['toalhas_reserva', 'camas_preparo'] },
             { titulo: "Amenities e Mimos", campos: ['reposicao_banho', 'reposicao_mimos'] },
-            { titulo: "Notas Especiais", campos: ['obs_agendamento'] }
+            { titulo: "Notas Especiais e Detalhes de Limpeza", campos: ['foco_video', 'obs_agendamento'] }
         ];
 
         const labelsMap = {
@@ -607,9 +639,10 @@
             'lixo_descarte': 'Descarte do Lixo', 'obs_finais': 'Observações Gerais',
             'cliente_tipo': 'Já tem Ficha?', 'condominio_torre': 'Condomínio e Apto', 'data_limpeza': 'Data Limpeza',
             'horario_limpeza': 'Horário Limpeza', 'tem_checkin': 'Novos hóspedes hoje?', 'horario_checkin': 'Horário Check-in',
+            'tem_checkout': 'Hóspedes saem hoje?', 'horario_checkout': 'Horário de Check-out', 'teve_pet': 'Houve Pet na última reserva?',
             'entrada_metodo': 'Como será a entrada?', 'num_pessoas': 'Qtd. Pessoas', 'toalhas_reserva': 'Toalhas Banho/Rosto',
             'camas_preparo': 'Preparo de Camas/Cobertores', 'reposicao_banho': 'Reposição Banheiro', 'reposicao_mimos': 'Reposição Mimos',
-            'obs_agendamento': 'Pedido Especial'
+            'foco_video': 'Foco no Vídeo de Prova de Limpeza', 'obs_agendamento': 'Pedido Especial'
         };
 
         // Função para gerar o PDF nativo usando pdfmake
@@ -814,3 +847,4 @@
     </script>
 </body>
 </html>
+
