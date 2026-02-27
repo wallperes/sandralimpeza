@@ -67,7 +67,7 @@
         }
     </style>
 </head>
-<body class="pb-12">
+<body class="pb-24">
 
     <!-- Navegação Superior -->
     <nav class="sticky top-0 z-50 glass border-b border-slate-200 px-4 py-3 flex justify-between items-center shadow-sm">
@@ -81,8 +81,8 @@
         <div id="save-indicator" class="text-[10px] bg-teal-50 text-teal-700 px-2 py-1 rounded-full font-bold opacity-0 transition-opacity border border-teal-100">Salvo ✓</div>
     </nav>
 
-    <!-- App Container -->
-    <main id="app-content" class="w-full max-w-md md:max-w-2xl mx-auto pl-4 pr-20 md:px-4 lg:px-8 pt-6 transition-all duration-300">
+    <!-- App Container (Recuperamos o espaço lateral total) -->
+    <main id="app-content" class="w-full max-w-md md:max-w-2xl mx-auto px-4 lg:px-8 pt-6 transition-all duration-300">
         
         <!-- Ecrã de Boas-vindas -->
         <section id="welcome-screen" class="space-y-6 animate-fade-in">
@@ -445,22 +445,29 @@
         </section>
     </main>
 
-    <!-- Barra de Navegação Lateral (Vertical) Adaptativa -->
-    <div id="bottom-nav" class="fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-[840px] hidden z-40 pointer-events-none">
-        <div class="absolute right-2 pointer-events-auto glass border border-teal-100 shadow-2xl rounded-full p-2 flex flex-col gap-2 bg-white/90">
-            <button onclick="navigate('home')" id="nav-home" class="w-14 h-14 flex flex-col items-center justify-center rounded-full transition-all text-slate-400 hover:bg-teal-50 active:scale-95">
-                <span class="text-xl mb-0.5">🏠</span>
-                <span class="text-[8px] font-bold uppercase tracking-wider">Início</span>
+    <!-- Menu Flutuante Expansível (FAB) -->
+    <div id="bottom-nav" class="fixed bottom-6 right-4 sm:right-8 z-50 hidden flex-col items-end gap-3 pointer-events-none">
+        <!-- Opções Ocultas (que aparecem ao clicar no menu) -->
+        <div id="fab-options" class="flex flex-col items-center gap-3 transition-all duration-300 opacity-0 translate-y-10 pointer-events-none origin-bottom">
+            <button onclick="navigate('home')" id="nav-home" class="w-12 h-12 glass border border-teal-100 shadow-xl rounded-full flex flex-col items-center justify-center transition-all text-slate-400 hover:bg-teal-50 active:scale-95 pointer-events-auto relative group">
+                <span class="text-xl">🏠</span>
+                <span class="absolute right-14 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Início</span>
             </button>
-            <button onclick="navigate('ficha')" id="nav-ficha" class="w-14 h-14 flex flex-col items-center justify-center rounded-full transition-all text-slate-400 hover:bg-teal-50 active:scale-95">
-                <span class="text-xl mb-0.5">📋</span>
-                <span class="text-[8px] font-bold uppercase tracking-wider">Ficha</span>
+            <button onclick="navigate('ficha')" id="nav-ficha" class="w-12 h-12 glass border border-teal-100 shadow-xl rounded-full flex flex-col items-center justify-center transition-all text-slate-400 hover:bg-teal-50 active:scale-95 pointer-events-auto relative group">
+                <span class="text-xl">📋</span>
+                <span class="absolute right-14 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Ficha</span>
             </button>
-            <button onclick="navigate('agenda')" id="nav-agenda" class="w-14 h-14 flex flex-col items-center justify-center rounded-full transition-all text-slate-400 hover:bg-teal-50 active:scale-95">
-                <span class="text-xl mb-0.5">📅</span>
-                <span class="text-[8px] font-bold uppercase tracking-wider">Agendar</span>
+            <button onclick="navigate('agenda')" id="nav-agenda" class="w-12 h-12 glass border border-teal-100 shadow-xl rounded-full flex flex-col items-center justify-center transition-all text-slate-400 hover:bg-teal-50 active:scale-95 pointer-events-auto relative group">
+                <span class="text-xl">📅</span>
+                <span class="absolute right-14 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Agendar</span>
             </button>
         </div>
+        
+        <!-- Botão Principal de Toggle -->
+        <button onclick="toggleFab()" id="fab-main" class="w-14 h-14 bg-teal-600 text-white rounded-full shadow-2xl shadow-teal-600/30 flex items-center justify-center transition-transform duration-300 hover:scale-105 active:scale-95 pointer-events-auto relative">
+            <svg id="fab-icon-menu" class="w-6 h-6 absolute transition-all duration-300 opacity-100 rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <svg id="fab-icon-close" class="w-6 h-6 absolute transition-all duration-300 opacity-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
     </div>
 
     <!-- Modal de Carregamento & Sucesso (Estilo WhatsApp Share) -->
@@ -505,6 +512,7 @@
         let currentStep = 1;
         const totalSteps = 6;
         const storageKey = 'sandra_app_data';
+        let fabOpen = false;
 
         window.onload = () => {
             loadSavedData();
@@ -520,10 +528,42 @@
             });
         };
 
+        // Função para abrir e fechar o Menu Flutuante (FAB)
+        function toggleFab() {
+            fabOpen = !fabOpen;
+            const options = document.getElementById('fab-options');
+            const iconMenu = document.getElementById('fab-icon-menu');
+            const iconClose = document.getElementById('fab-icon-close');
+            
+            if(fabOpen) {
+                options.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                options.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+                
+                iconMenu.classList.remove('opacity-100', 'rotate-0');
+                iconMenu.classList.add('opacity-0', 'rotate-90');
+                
+                iconClose.classList.remove('opacity-0', '-rotate-90');
+                iconClose.classList.add('opacity-100', 'rotate-0');
+            } else {
+                options.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                options.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+                
+                iconMenu.classList.add('opacity-100', 'rotate-0');
+                iconMenu.classList.remove('opacity-0', 'rotate-90');
+                
+                iconClose.classList.add('opacity-0', '-rotate-90');
+                iconClose.classList.remove('opacity-100', 'rotate-0');
+            }
+        }
+
         function navigate(page) {
             const screens = ['welcome-screen', 'ficha-module', 'agenda-module'];
             screens.forEach(s => document.getElementById(s).classList.add('hidden'));
+            
+            // Mostra o container do FAB assim que sai da home original (caso queira que ele não apareça na capa, 
+            // mas aqui deixaremos visível para permitir voltar)
             document.getElementById('bottom-nav').classList.remove('hidden');
+            document.getElementById('bottom-nav').classList.add('flex');
 
             if(page === 'home') {
                 document.getElementById('welcome-screen').classList.remove('hidden');
@@ -532,6 +572,10 @@
                 document.getElementById(`${page}-module`).classList.remove('hidden');
                 updateNavIcons(page);
             }
+            
+            // Fecha o menu flutuante se estiver aberto após o clique
+            if (fabOpen) toggleFab();
+            
             window.scrollTo(0,0);
         }
 
@@ -540,14 +584,12 @@
             btns.forEach(b => {
                 const el = document.getElementById(b);
                 if(el) {
-                    el.classList.remove('text-teal-700', 'bg-teal-100', 'shadow-sm');
-                    el.classList.add('text-slate-400');
+                    el.classList.remove('ring-2', 'ring-teal-500', 'bg-teal-50');
                 }
             });
             const active = document.getElementById(`nav-${page}`);
             if(active) {
-                active.classList.remove('text-slate-400');
-                active.classList.add('text-teal-700', 'bg-teal-100', 'shadow-sm');
+                active.classList.add('ring-2', 'ring-teal-500', 'bg-teal-50');
             }
         }
 
