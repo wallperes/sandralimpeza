@@ -67,7 +67,7 @@
         }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-12">
 
     <!-- Navegação Superior -->
     <nav class="sticky top-0 z-50 glass border-b border-slate-200 px-4 py-3 flex justify-between items-center shadow-sm">
@@ -82,11 +82,11 @@
     </nav>
 
     <!-- App Container -->
-    <main id="app-content" class="max-w-md mx-auto px-4 pt-6">
+    <main id="app-content" class="w-full max-w-md md:max-w-2xl mx-auto pl-4 pr-20 md:px-4 lg:px-8 pt-6 transition-all duration-300">
         
         <!-- Ecrã de Boas-vindas -->
         <section id="welcome-screen" class="space-y-6 animate-fade-in">
-            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-200 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1.5 h-full bg-teal-500"></div>
                 <h2 class="font-title text-2xl text-slate-800 mb-4 mt-2">Olá, eu sou a Sandra! </h2>
                 <p class="text-slate-600 leading-relaxed text-sm mb-4">
@@ -118,7 +118,7 @@
                 </div>
             </div>
 
-            <form id="form-ficha" class="space-y-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <form id="form-ficha" class="space-y-6 bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200">
                 <!-- Passo 1: Identificação -->
                 <div class="wizard-step" data-step="1">
                     <h3 class="text-xl font-title text-slate-800 mb-4 border-b border-slate-100 pb-3">Identificação do Imóvel </h3>
@@ -339,7 +339,7 @@
                 <iframe src="https://calendar.google.com/calendar/embed?src=sandramjo26%40gmail.com&mode=WEEK&ctz=America%2FSao_Paulo" style="border: 0" width="100%" height="550" frameborder="0" scrolling="no"></iframe>
             </div>
 
-            <form id="form-agenda" class="space-y-5 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <form id="form-agenda" class="space-y-5 bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200">
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Me tira uma dúvida rápida: já fez a Ficha do Imóvel desse seu imóvel antes, ou é a nossa primeira vez lá? </label>
                     <select name="cliente_tipo" class="input-base bg-white">
@@ -369,7 +369,6 @@
                     <p class="text-xs text-blue-800 leading-relaxed"> <strong>Aviso:</strong> É desejável dispor de 3 horas para uma limpeza com nosso padrão de qualidade. No entanto, é possível realizar em 2 horas caso seja necessário.</p>
                 </div>
 
-                <!-- NOVA PERGUNTA: CHECK-OUT -->
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Tem hóspedes saindo no mesmo dia da faxina (check-out)?</label>
                     <select name="tem_checkout" onchange="toggleCheckout(this.value)" class="input-base bg-white">
@@ -378,13 +377,11 @@
                     </select>
                 </div>
 
-                <!-- CAMPO ESCONDIDO: HORÁRIO CHECK-OUT -->
                 <div id="checkout-time-box" class="hidden animate-fade-in group">
                     <label class="block text-sm font-bold text-teal-600 mb-2">Qual é o horário limite de saída (check-out) dos hóspedes anteriores?</label>
                     <input type="text" name="horario_checkout" placeholder="Ex: 11:00" class="input-base border-teal-200 focus:border-teal-500 bg-teal-50/30">
                 </div>
 
-                <!-- PERGUNTA EXISTENTE: CHECK-IN -->
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Entrarão novos hóspedes no mesmo dia dessa solicitação de limpeza? </label>
                     <select name="tem_checkin" onchange="toggleCheckin(this.value)" class="input-base bg-white">
@@ -408,7 +405,6 @@
                     <input type="number" name="num_pessoas" class="input-base">
                 </div>
 
-                <!-- NOVA PERGUNTA: ANIMAL DE ESTIMAÇÃO -->
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Houve algum animal de estimação hospedado na última reserva? (Se sim, isso me ajuda a planejar tempo extra para o seu imóvel).</label>
                     <input type="text" name="teve_pet" placeholder="Ex: Não / Sim, um cachorro" class="input-base">
@@ -434,7 +430,6 @@
                     <input type="text" name="reposicao_mimos" class="input-base">
                 </div>
 
-                <!-- NOVA PERGUNTA: VÍDEO PROVA DE LIMPEZA -->
                 <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Ao final, sempre faço um vídeo de “Prova de Limpeza” para te blindar contra falsas reclamações. Tem algum detalhe que algum hóspede já usou no passado para pedir desconto e que você quer que eu foque na filmagem para sua tranquilidade?</label>
                     <textarea name="foco_video" rows="2" class="input-base"></textarea>
@@ -450,17 +445,20 @@
         </section>
     </main>
 
-    <!-- Barra de Navegação Inferior -->
-    <div id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md hidden z-40">
-        <div class="glass border border-white/50 shadow-xl rounded-2xl p-2 flex gap-1 bg-white/80">
-            <button onclick="navigate('home')" id="nav-home" class="flex-1 flex flex-col items-center py-2.5 rounded-xl transition-colors text-slate-400 hover:bg-slate-50">
-                <span class="text-[10px] font-bold uppercase mt-1">Início</span>
+    <!-- Barra de Navegação Lateral (Vertical) Adaptativa -->
+    <div id="bottom-nav" class="fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-[840px] hidden z-40 pointer-events-none">
+        <div class="absolute right-2 pointer-events-auto glass border border-teal-100 shadow-2xl rounded-full p-2 flex flex-col gap-2 bg-white/90">
+            <button onclick="navigate('home')" id="nav-home" class="w-14 h-14 flex flex-col items-center justify-center rounded-full transition-all text-slate-400 hover:bg-teal-50 active:scale-95">
+                <span class="text-xl mb-0.5">🏠</span>
+                <span class="text-[8px] font-bold uppercase tracking-wider">Início</span>
             </button>
-            <button onclick="navigate('ficha')" id="nav-ficha" class="flex-1 flex flex-col items-center py-2.5 rounded-xl transition-colors text-slate-400 hover:bg-slate-50">
-                <span class="text-[10px] font-bold uppercase mt-1">Ficha</span>
+            <button onclick="navigate('ficha')" id="nav-ficha" class="w-14 h-14 flex flex-col items-center justify-center rounded-full transition-all text-slate-400 hover:bg-teal-50 active:scale-95">
+                <span class="text-xl mb-0.5">📋</span>
+                <span class="text-[8px] font-bold uppercase tracking-wider">Ficha</span>
             </button>
-            <button onclick="navigate('agenda')" id="nav-agenda" class="flex-1 flex flex-col items-center py-2.5 rounded-xl transition-colors text-slate-400 hover:bg-slate-50">
-                <span class="text-[10px] font-bold uppercase mt-1">Agendar</span>
+            <button onclick="navigate('agenda')" id="nav-agenda" class="w-14 h-14 flex flex-col items-center justify-center rounded-full transition-all text-slate-400 hover:bg-teal-50 active:scale-95">
+                <span class="text-xl mb-0.5">📅</span>
+                <span class="text-[8px] font-bold uppercase tracking-wider">Agendar</span>
             </button>
         </div>
     </div>
@@ -469,20 +467,37 @@
     <div id="loading-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex flex-col items-center justify-center p-6 text-white text-center">
         <div id="loading-state" class="flex flex-col items-center">
             <div class="w-14 h-14 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-6"></div>
-            <p class="font-bold text-xl">Gerando PDF...</p>
-            <p class="text-sm text-slate-300 mt-2">Formatando documento profissional</p>
+            <p class="font-bold text-xl">Processando dados...</p>
+            <p class="text-sm text-slate-300 mt-2">Formatando as informações</p>
         </div>
+        
+        <!-- Tela de Sucesso -->
         <div id="success-state" class="hidden flex-col items-center w-full max-w-sm">
             <div class="w-16 h-16 bg-teal-500 rounded-full flex items-center justify-center text-3xl mb-4 shadow-lg shadow-teal-500/30">✓</div>
-            <h3 class="text-2xl font-bold mb-2">PDF Pronto!</h3>
+            <h3 class="text-2xl font-bold mb-2">Tudo Pronto!</h3>
             <div class="bg-white/10 text-white p-4 rounded-xl border border-white/20 w-full mb-6 text-sm backdrop-blur-md">
-                Lembre-se de enviar o arquivo para <strong>Sandra: (21) 96929-3505</strong>
+                Clique abaixo para enviar os dados para a <strong>Sandra: (21) 96929-3505</strong>
             </div>
+            
             <button id="btn-final-share" class="w-full py-4 rounded-2xl font-bold text-lg shadow-xl flex items-center justify-center gap-3 mb-4 transition-transform active:scale-95" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
                 <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0.16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.63 1.433h.005c6.554 0 11.89-5.335 11.893-11.892a11.826 11.826 0 00-3.483-8.417"/></svg>
-                Enviar PDF por WhatsApp
+                Enviar por WhatsApp
+            </button>
+            <button id="btn-fallback-text" class="hidden w-full py-4 rounded-2xl font-bold text-lg shadow-xl bg-slate-800 text-white flex items-center justify-center gap-3 mb-4 transition-transform active:scale-95">
+                Enviar dados como Texto
             </button>
             <button onclick="closeModal()" class="text-slate-300 text-sm py-2 hover:text-white transition-colors">Voltar e editar</button>
+        </div>
+
+        <!-- Tela de Erro -->
+        <div id="error-state" class="hidden flex-col items-center w-full max-w-sm">
+            <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-3xl mb-4 shadow-lg shadow-red-500/30">!</div>
+            <h3 class="text-2xl font-bold mb-2">Pequeno imprevisto</h3>
+            <p class="text-slate-300 text-sm mb-6">O seu navegador bloqueou o PDF. Não se preocupe, seus dados estão salvos!</p>
+            <button id="btn-error-text" class="w-full py-4 rounded-2xl font-bold text-lg shadow-xl flex items-center justify-center gap-3 mb-4 transition-transform active:scale-95" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
+                Enviar dados como Texto
+            </button>
+            <button onclick="closeModal()" class="text-slate-300 text-sm py-2 hover:text-white transition-colors">Voltar</button>
         </div>
     </div>
 
@@ -525,14 +540,14 @@
             btns.forEach(b => {
                 const el = document.getElementById(b);
                 if(el) {
-                    el.classList.remove('text-teal-600');
+                    el.classList.remove('text-teal-700', 'bg-teal-100', 'shadow-sm');
                     el.classList.add('text-slate-400');
                 }
             });
             const active = document.getElementById(`nav-${page}`);
             if(active) {
                 active.classList.remove('text-slate-400');
-                active.classList.add('text-teal-600');
+                active.classList.add('text-teal-700', 'bg-teal-100', 'shadow-sm');
             }
         }
 
@@ -554,7 +569,6 @@
         }
 
         function toggleCheckin(val) { document.getElementById('checkin-time-box').classList.toggle('hidden', val !== 'Sim'); }
-        // Nova função para toggle do checkout
         function toggleCheckout(val) { document.getElementById('checkout-time-box').classList.toggle('hidden', val !== 'Sim'); }
 
         async function checkCep(cep) {
@@ -596,7 +610,7 @@
                 if(!input) return;
                 if(input.type === 'checkbox') {
                     const checks = document.querySelectorAll(`[name="${key}"]`);
-                    checks.forEach(c => c.checked = data[key].includes(c.value));
+                    checks.forEach(c => c.checked = data[key] && data[key].includes(c.value));
                 } else { input.value = data[key]; }
             });
             if(data.tem_checkin === 'Sim') toggleCheckin('Sim');
@@ -607,6 +621,7 @@
             document.getElementById('loading-modal').classList.add('hidden');
             document.getElementById('loading-state').classList.remove('hidden');
             document.getElementById('success-state').classList.add('hidden');
+            document.getElementById('error-state').classList.add('hidden');
         }
 
         const FICHA_CATEGORIAS = [
@@ -618,7 +633,6 @@
             { titulo: "Finalização e Detalhes", campos: ['sujeira_extrema', 'mimos', 'fechamento', 'lixo_descarte', 'obs_finais'] }
         ];
 
-        // Atualizado com os novos campos
         const AGENDA_CATEGORIAS = [
             { titulo: "Informações Gerais e Horários", campos: ['cliente_tipo', 'condominio_torre', 'data_limpeza', 'horario_limpeza', 'tem_checkout', 'horario_checkout', 'tem_checkin', 'horario_checkin', 'num_pessoas', 'teve_pet'] },
             { titulo: "Acesso e Segurança", campos: ['entrada_metodo'] },
@@ -645,15 +659,46 @@
             'foco_video': 'Foco no Vídeo de Prova de Limpeza', 'obs_agendamento': 'Pedido Especial'
         };
 
-        // Função para gerar o PDF nativo usando pdfmake
+        // Função de Fallback (Plano B) - Envia os dados como texto formatado direto no WhatsApp
+        function sendAsText(type) {
+            const formId = type === 'ficha' ? 'form-ficha' : 'form-agenda';
+            const formData = new FormData(document.getElementById(formId));
+            const categorias = type === 'ficha' ? FICHA_CATEGORIAS : AGENDA_CATEGORIAS;
+            
+            let texto = `*NOVA SOLICITAÇÃO - SANDRA LIMPEZAS*\nTipo: ${type === 'ficha' ? 'Ficha do Imóvel' : 'Agendamento'}\n\n`;
+            
+            categorias.forEach(cat => {
+                let hasDataCat = false;
+                let catText = `*${cat.titulo.toUpperCase()}*\n`;
+                
+                cat.campos.forEach(campo => {
+                    let val = campo === 'equip' ? formData.getAll('equip').join(', ') : formData.get(campo);
+                    if(val && val.trim() !== "") {
+                        hasDataCat = true;
+                        if(campo === 'data_limpeza') val = new Date(val).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+                        catText += `- ${labelsMap[campo] || campo}: ${val}\n`;
+                    }
+                });
+                
+                if(hasDataCat) texto += catText + '\n';
+            });
+            
+            const url = `https://wa.me/5521969293505?text=${encodeURIComponent(texto)}`;
+            window.open(url, '_blank');
+        }
+
         async function generateReport(type) {
             const modal = document.getElementById('loading-modal');
             const loadState = document.getElementById('loading-state');
             const successState = document.getElementById('success-state');
+            const errorState = document.getElementById('error-state');
+            const fallbackTextBtn = document.getElementById('btn-fallback-text');
+            const errorTextBtn = document.getElementById('btn-error-text');
             
             modal.classList.remove('hidden');
             loadState.classList.remove('hidden');
             successState.classList.add('hidden');
+            errorState.classList.add('hidden');
 
             const formId = type === 'ficha' ? 'form-ficha' : 'form-agenda';
             const formData = new FormData(document.getElementById(formId));
@@ -672,7 +717,6 @@
                 pdfSubtitle = `Data: ${checkinData} | Horário: ${hrLimpeza}`;
             }
 
-            // Definição da estrutura nativa do PDF (pdfmake)
             const docDefinition = {
                 pageSize: 'A4',
                 pageMargins: [40, 50, 40, 50],
@@ -687,13 +731,10 @@
                     footerText: { fontSize: 9, color: '#94a3b8', alignment: 'center', margin: [0, 20, 0, 0] }
                 },
                 content: [
-                    // Caixa Vermelha de Alerta
                     {
                         table: {
                             widths: ['*'],
-                            body: [
-                                [{ text: 'DOCUMENTO VÁLIDO APENAS SE ENVIADO PARA SANDRA: (21) 96929-3505', style: 'alertBox' }]
-                            ]
+                            body: [[{ text: 'DOCUMENTO VÁLIDO APENAS SE ENVIADO PARA SANDRA: (21) 96929-3505', style: 'alertBox' }]]
                         },
                         layout: {
                             hLineWidth: function() { return 1.5; },
@@ -705,7 +746,6 @@
                         },
                         margin: [0, 0, 0, 25]
                     },
-                    // Título e Data
                     {
                         columns: [
                             {
@@ -726,13 +766,11 @@
                         ],
                         margin: [0, 0, 0, 10]
                     },
-                    // Linha divisória fina embaixo do título
                     {
                         canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2, lineColor: '#0d9488' }],
                         margin: [0, 0, 0, 10]
                     }
                 ],
-                // Rodapé Dinâmico
                 footer: function(currentPage, pageCount) {
                     return {
                         text: 'Documento gerado digitalmente para garantir o padrão de qualidade e hospitalidade. Página ' + currentPage.toString() + ' de ' + pageCount,
@@ -743,108 +781,120 @@
 
             const categorias = type === 'ficha' ? FICHA_CATEGORIAS : AGENDA_CATEGORIAS;
 
-            // Montando o corpo das respostas no PDF
-            categorias.forEach(cat => {
-                let catFieldsHtml = [];
-                let currentRow = [];
-                let hasData = false;
+            try {
+                categorias.forEach(cat => {
+                    let catFieldsHtml = [];
+                    let currentRow = [];
+                    let hasData = false;
 
-                cat.campos.forEach(campo => {
-                    let val = '';
-                    if(campo === 'equip') {
-                        val = formData.getAll('equip').join(', ');
-                    } else if(campo === 'data_limpeza') {
-                         val = formData.get(campo) ? new Date(formData.get(campo)).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '';
-                    } else {
-                        val = formData.get(campo);
-                    }
-                    
-                    if(val && val.trim() !== "") {
-                        hasData = true;
-                        const isLongText = val.length > 50 || campo === 'equip' || campo === 'montagem_camas';
-                        const styleName = campo === 'proibidos' ? 'fieldValueProibido' : 'fieldValue';
-                        const labelText = (labelsMap[campo] || campo).toUpperCase();
-                        
-                        const block = [
-                            { text: labelText, style: 'fieldLabel' },
-                            { text: val.replace(/\n/g, '\n'), style: styleName }
-                        ];
-
-                        if (isLongText) {
-                            // Se a linha atual tiver algo, empurra ela pro array principal antes do item longo
-                            if (currentRow.length > 0) {
-                                catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
-                                currentRow = [];
-                            }
-                            catFieldsHtml.push({ stack: block, margin: [0, 0, 0, 5] });
+                    cat.campos.forEach(campo => {
+                        let val = '';
+                        if(campo === 'equip') {
+                            val = formData.getAll('equip').join(', ');
+                        } else if(campo === 'data_limpeza') {
+                             val = formData.get(campo) ? new Date(formData.get(campo)).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '';
                         } else {
-                            // Textos curtos dividem o espaço em 2 colunas
-                            currentRow.push({ stack: block, width: '*' });
-                            if (currentRow.length === 2) {
-                                catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
-                                currentRow = [];
+                            val = formData.get(campo);
+                        }
+                        
+                        // FIX CRÍTICO: Garantir que 'val' seja sempre uma String para evitar que o .replace quebre a página
+                        val = val ? String(val) : '';
+                        
+                        if(val.trim() !== "") {
+                            hasData = true;
+                            const isLongText = val.length > 50 || campo === 'equip' || campo === 'montagem_camas';
+                            const styleName = campo === 'proibidos' ? 'fieldValueProibido' : 'fieldValue';
+                            const labelText = (labelsMap[campo] || campo).toUpperCase();
+                            
+                            const block = [
+                                { text: labelText, style: 'fieldLabel' },
+                                { text: val.replace(/\n/g, '\n'), style: styleName }
+                            ];
+
+                            if (isLongText) {
+                                if (currentRow.length > 0) {
+                                    catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
+                                    currentRow = [];
+                                }
+                                catFieldsHtml.push({ stack: block, margin: [0, 0, 0, 5] });
+                            } else {
+                                currentRow.push({ stack: block, width: '*' });
+                                if (currentRow.length === 2) {
+                                    catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
+                                    currentRow = [];
+                                }
                             }
                         }
+                    });
+
+                    if (currentRow.length > 0) {
+                        currentRow.push({ text: '', width: '*' });
+                        catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
+                    }
+
+                    if(hasData) {
+                        docDefinition.content.push({ text: cat.titulo, style: 'categoryTitle' });
+                        docDefinition.content.push({
+                            canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, lineColor: '#e2e8f0' }],
+                            margin: [0, 0, 0, 12]
+                        });
+                        docDefinition.content = docDefinition.content.concat(catFieldsHtml);
                     }
                 });
 
-                // Se sobrou algum item sozinho na linha curta, fecha ela
-                if (currentRow.length > 0) {
-                    currentRow.push({ text: '', width: '*' }); // coluna fantasma para alinhar
-                    catFieldsHtml.push({ columns: currentRow, columnGap: 20 });
-                }
-
-                // Se essa categoria teve respostas, joga no PDF
-                if(hasData) {
-                    docDefinition.content.push({ text: cat.titulo, style: 'categoryTitle' });
-                    docDefinition.content.push({
-                        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, lineColor: '#e2e8f0' }],
-                        margin: [0, 0, 0, 12]
-                    });
-                    docDefinition.content = docDefinition.content.concat(catFieldsHtml);
-                }
-            });
-
-            try {
-                // Pequeno delay visual para UX
                 await new Promise(r => setTimeout(r, 600));
 
-                // GERA O PDF NATIVO
+                // Bloco Try/Catch reforçado dentro da geração do Blob
                 pdfMake.createPdf(docDefinition).getBlob(async (blob) => {
-                    const file = new File([blob], `Sandra_${type}_${Date.now()}.pdf`, { type: 'application/pdf' });
+                    try {
+                        const file = new File([blob], `Sandra_${type}_${Date.now()}.pdf`, { type: 'application/pdf' });
+                        
+                        loadState.classList.add('hidden');
+                        successState.classList.remove('hidden');
 
-                    loadState.classList.add('hidden');
-                    successState.classList.remove('hidden');
+                        // Configura os botões de fallback
+                        fallbackTextBtn.onclick = () => sendAsText(type);
+                        errorTextBtn.onclick = () => sendAsText(type);
 
-                    document.getElementById('btn-final-share').onclick = async () => {
-                        // Verifica se o aparelho suporta envio do arquivo direto (celulares modernos)
-                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                            try {
-                                await navigator.share({
-                                    files: [file],
-                                    title: `Documento Sandra - ${type.toUpperCase()}`,
-                                    text: `Olá Sandra! Segue o meu documento gerado em PDF.\n*Documento válido apenas se enviado para (21) 96929-3505*`
-                                });
-                            } catch (err) {
-                                console.log("Compartilhamento cancelado ou falhou", err);
+                        document.getElementById('btn-final-share').onclick = async () => {
+                            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                                try {
+                                    await navigator.share({
+                                        files: [file],
+                                        title: `Documento Sandra - ${type.toUpperCase()}`,
+                                        text: `Olá Sandra! Segue o meu documento gerado em PDF.\n*Documento válido apenas se enviado para (21) 96929-3505*`
+                                    });
+                                } catch (err) {
+                                    console.log("Compartilhamento cancelado", err);
+                                    // Se o usuário apenas cancelar, não fazemos nada. Se o sistema negar, exibimos o fallback.
+                                    fallbackTextBtn.classList.remove('hidden');
+                                }
+                            } else {
+                                // Para navegadores que bloqueiam o Share (Webview, PC)
+                                try {
+                                    const link = document.createElement('a');
+                                    link.download = `Sandra_Documento_${type}.pdf`;
+                                    link.href = URL.createObjectURL(blob);
+                                    link.click();
+                                    alert("O PDF foi salvo no seu dispositivo! Anexe ele na conversa do WhatsApp para enviar.");
+                                } catch(downloadErr) {
+                                    // Bloqueio de download do iOS detectado
+                                    fallbackTextBtn.classList.remove('hidden');
+                                    alert("Seu navegador bloqueou o download do arquivo. Clique no botão de enviar como texto.");
+                                }
                             }
-                        } else {
-                            // Se estiver no PC ou navegador não compatível com envio direto, baixa o arquivo
-                            const link = document.createElement('a');
-                            link.download = `Sandra_Documento_${type}.pdf`;
-                            link.href = URL.createObjectURL(blob);
-                            link.click();
-                            alert("O seu dispositivo não suporta o envio direto por este botão. O PDF foi baixado no seu dispositivo, por favor envie-o como anexo para a Sandra no WhatsApp.");
-                        }
-                    };
+                        };
+                    } catch(blobErr) {
+                        throw blobErr; // Envia para o catch principal
+                    }
                 });
             } catch (err) {
-                console.error("Erro ao gerar PDF", err);
-                closeModal();
-                alert("Ocorreu um erro ao gerar o documento. Tente novamente.");
+                console.error("Erro Crítico ao gerar PDF", err);
+                loadState.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                errorTextBtn.onclick = () => sendAsText(type);
             }
         }
     </script>
 </body>
 </html>
-
