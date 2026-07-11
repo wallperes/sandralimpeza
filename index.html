@@ -23,7 +23,6 @@
         .font-title { font-family: 'Playfair Display', serif; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         
-        /* Ocultar scrollbar */
         ::-webkit-scrollbar { display: none; }
         
         textarea {
@@ -312,6 +311,11 @@
                 </div>
 
                 <div class="group">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Qual o seu número de WhatsApp? 📱</label>
+                    <input type="tel" name="telefone_cliente" class="input-base" placeholder="Ex: 21 99999-9999">
+                </div>
+
+                <div class="group">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Condomínio, torre e número do apartamento 🏢</label>
                     <input type="text" name="condominio_torre" class="input-base" placeholder="Ex: Rio Wonder, Torre 1, Apto 509">
                 </div>
@@ -353,7 +357,7 @@
                 </div>
 
                 <div class="group">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Entrarão novos hóspedes no mesmo dia? Doors</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Entrarão novos hóspedes no mesmo dia?</label>
                     <select name="tem_checkin" onchange="toggleCheckin(this.value)" class="input-base bg-white">
                         <option value="Não">Não, o apartamento ficará vazio</option>
                         <option value="Sim">Sim, entram no mesmo dia</option>
@@ -438,15 +442,15 @@
     <div id="loading-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex flex-col items-center justify-center p-6 text-white text-center">
         <div id="loading-state" class="flex flex-col items-center">
             <div class="w-14 h-14 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-6"></div>
-            <p class="font-bold text-xl">Consultando a agenda da Sandra...</p>
+            <p class="font-bold text-xl">Processando...</p>
             <p class="text-sm text-slate-300 mt-2">Aguarde um instante</p>
         </div>
         
         <div id="success-state" class="hidden flex-col items-center w-full max-w-sm">
             <div class="w-16 h-16 bg-teal-500 rounded-full flex items-center justify-center text-3xl mb-4 shadow-lg">✓</div>
-            <h3 class="text-2xl font-bold mb-2">Horário Disponível! 🎉</h3>
+            <h3 class="text-2xl font-bold mb-2">Tudo Pronto! 🎉</h3>
             <div class="bg-white/10 text-white p-4 rounded-xl border border-white/20 w-full mb-6 text-sm backdrop-blur-md">
-                O horário solicitado estava livre e já foi pré-reservado como pendente na agenda. Avise a Sandra agora mesmo!
+                Ação concluída com sucesso.
             </div>
             <button id="btn-final-share" class="w-full py-4 rounded-2xl font-bold text-lg shadow-xl flex items-center justify-center gap-3 mb-4 text-white" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
                 💬 Enviar Confirmação por WhatsApp
@@ -474,8 +478,8 @@
         const storageKey = 'sandra_app_data';
         let fabOpen = false;
 
-        // URL e Token do Webhook do Google Apps Script
-        const URL_WEBHOOK_GOOGLE = "https://script.google.com/macros/s/AKfycbyu5FkofO77y5G4kQnwzA8fewAhoR6g6O3wALrB9BF9_L6ZiPAVTAgSKkH3lJiDZnWX/exec";
+        // SE VOCE GEROU UMA NOVA URL NO GOOGLE APPS SCRIPT, COLOQUE AQUI:
+        const URL_WEBHOOK_GOOGLE = "https://script.google.com/macros/s/AKfycbw95VZS-OVrAoFk5iO6FmxyEp_Kf8p_cQzsE9xKlQuEaVAlVJ3wjVxrsxS69uJDeAfg/exec";
         const TOKEN_SECRETO = "SenhaSuperSegura123!";
 
         window.onload = () => {
@@ -560,17 +564,8 @@
             document.getElementById('loading-modal').classList.add('hidden');
         }
 
-        function submeterFichaTabela() {
-            const form = document.getElementById('form-ficha');
-            const data = new FormData(form);
-            const proprietario = data.get('proprietario') || 'Não informado';
-            const condominio = data.get('edificio') || 'Não informado';
-            
-            const texto = `Oi Sandra! Acabei de preencher a Ficha Técnica do meu imóvel pelo seu site para o seu controle!\n\n🏢 *Imóvel:* ${condominio}\n👤 *Responsável:* ${proprietario}\n\nOs dados já foram catalogados. Obrigado! 😊`;
-            window.open(`https://wa.me/5521969293505?text=${encodeURIComponent(texto)}`, '_blank');
-        }
-
-        async function executarAgendamentoInteligente() {
+        // SALVA TODOS OS CAMPOS NA PLANILHA
+        async function submeterFichaTabela() {
             const modal = document.getElementById('loading-modal');
             const loadState = document.getElementById('loading-state');
             const successState = document.getElementById('success-state');
@@ -581,35 +576,31 @@
             successState.classList.add('hidden');
             conflictState.classList.add('hidden');
 
-            const form = document.getElementById('form-agenda');
+            document.querySelector('#loading-state p').innerText = "Salvando Ficha do Imóvel...";
+            document.querySelector('#loading-state .text-slate-300').innerText = "Enviando dados para a planilha segura";
+
+            const form = document.getElementById('form-ficha');
             const data = new FormData(form);
+            const proprietario = data.get('proprietario') || 'Não informado';
+            const condominio = data.get('edificio') || 'Não informado';
             
-            const apto = data.get('condominio_torre');
-            const dataLimpeza = data.get('data_limpeza');
-            const hInicio = data.get('hora_inicio');
-            const hFim = data.get('hora_fim');
+            // Pega o valor de todas as perguntas em ordem para gerar 30 colunas na planilha
+            const nomesCampos = ['cep', 'rua', 'bairro', 'cidade', 'numero', 'complemento', 'edificio', 'proprietario', 'configuracao', 'aspirador', 'materiais_basicos', 'produtos_instrucao', 'proibidos', 'ventiladores', 'guarda_enxoval', 'roupa_suja', 'montagem_camas', 'amenities', 'toalhas_posicao', 'sobras_geladeira', 'equip', 'equip_outros', 'quantidades_louca', 'cozinha_extras', 'sujeira_extrema', 'mimos', 'fechamento', 'lixo_descarte', 'obs_finais'];
             
-            if(!dataLimpeza || !apto) {
-                alert("Por favor, preencha o nome do imóvel e a data desejada!");
-                modal.classList.add('hidden');
-                return;
-            }
-
-            const dataBr = dataLimpeza.split('-').reverse().join('/');
-            const horarioTxt = `das ${hInicio} às ${hFim}`;
-
-            const isoInicio = `${dataLimpeza}T${hInicio}:00`;
-            const isoFim = `${dataLimpeza}T${hFim}:00`;
+            const valoresPlanilha = [new Date().toLocaleString('pt-BR')]; // Coluna A (Data do registro)
+            
+            nomesCampos.forEach(nome => {
+                if (nome === 'equip') {
+                    valoresPlanilha.push(data.getAll('equip').join(', '));
+                } else {
+                    valoresPlanilha.push(data.get(nome) || '-');
+                }
+            });
 
             const payload = {
                 "token": TOKEN_SECRETO,
-                "tipo": "limpeza",
-                "apto": apto,
-                "data_inicio": isoInicio,
-                "data_fim": isoFim,
-                "data_br": dataBr,
-                "horario_formatado": horarioTxt,
-                "detalhes": `Acesso: ${data.get('entrada_metodo')}\nCamas: ${data.get('camas_preparo')}\nNotas: ${data.get('obs_agendamento')}`
+                "tipo": "ficha",
+                "linha_planilha": valoresPlanilha
             };
 
             try {
@@ -623,6 +614,109 @@
 
                 if (resultado.status === "sucesso") {
                     successState.classList.remove('hidden');
+                    document.querySelector('#success-state h3').innerText = "Ficha Salva! 🎉";
+                    document.querySelector('#success-state div').innerHTML = "A ficha do seu imóvel foi <strong>catalogada com sucesso</strong> na base de dados da Sandra!";
+
+                    const texto = `Oi Sandra! Acabei de preencher a Ficha Técnica do meu imóvel pelo seu site para o seu controle!\n\n🏢 *Imóvel:* ${condominio}\n👤 *Responsável:* ${proprietario}\n\nOs dados já foram catalogados na sua planilha. Obrigado! 😊`;
+                    
+                    document.getElementById('btn-final-share').onclick = () => {
+                        window.open(`https://wa.me/5521969293505?text=${encodeURIComponent(texto)}`, '_blank');
+                        closeModal();
+                    };
+                } else {
+                    alert("Erro ao salvar: " + resultado.mensagem);
+                    modal.classList.add('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                loadState.classList.add('hidden');
+                alert("Erro de conexão ao salvar a ficha.");
+                modal.classList.add('hidden');
+            }
+        }
+
+        // SALVA NA AGENDA COM TODAS AS RESPOSTAS DENTRO DO EVENTO
+        async function executarAgendamentoInteligente() {
+            const modal = document.getElementById('loading-modal');
+            const loadState = document.getElementById('loading-state');
+            const successState = document.getElementById('success-state');
+            const conflictState = document.getElementById('conflict-state');
+            
+            modal.classList.remove('hidden');
+            loadState.classList.remove('hidden');
+            successState.classList.add('hidden');
+            conflictState.classList.add('hidden');
+
+            document.querySelector('#loading-state p').innerText = "Consultando a agenda da Sandra...";
+            document.querySelector('#loading-state .text-slate-300').innerText = "Aguarde um instante";
+
+            const form = document.getElementById('form-agenda');
+            const data = new FormData(form);
+            
+            const apto = data.get('condominio_torre');
+            const dataLimpeza = data.get('data_limpeza');
+            const hInicio = data.get('hora_inicio');
+            const hFim = data.get('hora_fim');
+            const telefoneCliente = data.get('telefone_cliente') || '';
+            
+            if(!dataLimpeza || !apto) {
+                alert("Por favor, preencha o nome do imóvel e a data desejada!");
+                modal.classList.add('hidden');
+                return;
+            }
+
+            const dataBr = dataLimpeza.split('-').reverse().join('/');
+            const horarioTxt = `das ${hInicio} às ${hFim}`;
+
+            const isoInicio = `${dataLimpeza}T${hInicio}:00`;
+            const isoFim = `${dataLimpeza}T${hFim}:00`;
+
+            // Construção do bloco de detalhes completo que vai pro Google Calendar
+            const detalhesFormatados = `
+** INFORMAÇÕES GERAIS **
+Tipo de Cliente: ${data.get('cliente_tipo') || '-'}
+Check-out (Saída): ${data.get('tem_checkout') || '-'} ${data.get('tem_checkout') === 'Sim' ? '(' + (data.get('horario_checkout') || 'S/ hr') + ')' : ''}
+Check-in (Entrada): ${data.get('tem_checkin') || '-'} ${data.get('tem_checkin') === 'Sim' ? '(' + (data.get('horario_checkin') || 'S/ hr') + ')' : ''}
+Acesso: ${data.get('entrada_metodo') || '-'}
+Qtd Pessoas: ${data.get('num_pessoas') || '-'}
+Pet hospedado: ${data.get('teve_pet') || '-'}
+
+** ENXOVAL E PREPARO **
+Toalhas: ${data.get('toalhas_reserva') || '-'}
+Preparo Camas: ${data.get('camas_preparo') || '-'}
+Reposição Banheiro: ${data.get('reposicao_banho') || '-'}
+Reposição Mimos: ${data.get('reposicao_mimos') || '-'}
+
+** OBSERVAÇÕES ESPECIAIS **
+Foco p/ Vídeo: ${data.get('foco_video') || '-'}
+Pedidos Extras: ${data.get('obs_agendamento') || '-'}
+            `.trim();
+
+            const payload = {
+                "token": TOKEN_SECRETO,
+                "tipo": "limpeza",
+                "apto": apto,
+                "telefone": telefoneCliente,
+                "data_inicio": isoInicio,
+                "data_fim": isoFim,
+                "data_br": dataBr,
+                "horario_formatado": horarioTxt,
+                "detalhes": detalhesFormatados
+            };
+
+            try {
+                const response = await fetch(URL_WEBHOOK_GOOGLE, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const resultado = await response.json();
+
+                loadState.classList.add('hidden');
+
+                if (resultado.status === "sucesso") {
+                    successState.classList.remove('hidden');
+                    document.querySelector('#success-state h3').innerText = "Horário Disponível! 🎉";
+                    document.querySelector('#success-state div').innerHTML = "O horário solicitado estava livre e já foi pré-reservado como pendente na agenda. Avise a Sandra agora mesmo!";
                     
                     const msgSucesso = `Oi Sandra! Usei o seu site para solicitar uma limpeza.\n\n🏢 *Imóvel:* ${apto}\n📅 *Data:* ${dataBr}\n⏰ *Horário:* ${horarioTxt}\n\nO site me avisou que seu horário estava livre e já registrou o pedido como pendente na sua agenda. Se estiver tudo certinho, me avise por favor! 😊`;
                     document.getElementById('btn-final-share').onclick = () => {
