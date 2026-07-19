@@ -462,7 +462,6 @@
         </button>
     </div>
 
-    <!-- MODAL REESTRUTURADO -->
     <div id="loading-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex flex-col items-center justify-center p-6 text-white text-center">
         <div id="loading-state" class="flex flex-col items-center">
             <div class="w-14 h-14 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-6"></div>
@@ -721,11 +720,15 @@
             const isoInicio = `${dataLimpeza}T${hInicio}:00`;
             const isoFim = `${dataLimpeza}T${hFim}:00`;
 
+            // Lógica de formatação para exibir o horário se ele for preenchido
+            const strCheckout = data.get('horario_checkout') ? ` - Horário: ${data.get('horario_checkout')}` : '';
+            const strCheckin = data.get('horario_checkin') ? ` - Horário: ${data.get('horario_checkin')}` : '';
+
             const detalhesFormatados = `
 ** INFORMAÇÕES GERAIS **
 Tipo de Cliente: ${data.get('cliente_tipo') || '-'}
-Check-out (Saída): ${data.get('tem_checkout') || '-'} ${data.get('tem_checkout') === 'Sim' ? '(' + (data.get('horario_checkout') || 'S/ hr') + ')' : ''}
-Check-in (Entrada): ${data.get('tem_checkin') || '-'} ${data.get('tem_checkin') === 'Sim' ? '(' + (data.get('horario_checkin') || 'S/ hr') + ')' : ''}
+Check-out (Saída): ${data.get('tem_checkout') || '-'}${strCheckout}
+Check-in (Entrada): ${data.get('tem_checkin') || '-'}${strCheckin}
 Acesso: ${data.get('entrada_metodo') || '-'}
 Qtd Pessoas: ${data.get('num_pessoas') || '-'}
 Pet hospedado: ${data.get('teve_pet') || '-'}
