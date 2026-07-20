@@ -309,11 +309,12 @@
         <section id="agenda-module" class="hidden animate-fade-in">
             <h3 class="text-xl font-title text-slate-800 mb-5 px-1">Solicitação de Limpeza 📅</h3>
             
-            <!-- QUADRO NOVO: LIMITE DA AGENDA -->
-            <div class="mb-6 bg-teal-50 p-5 rounded-3xl shadow-sm border border-teal-200 text-center">
-                <span class="text-3xl block mb-2">📅</span>
-                <h4 class="font-bold text-teal-800 text-lg mb-1">Abertura de Agenda</h4>
-                <p id="msg-limite-agenda" class="text-teal-700 text-sm leading-relaxed">
+            <!-- QUADRO NOVO GIGANTE: LIMITE DA AGENDA -->
+            <div class="mb-6 bg-teal-50 p-6 rounded-3xl shadow-md border-2 border-teal-200 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-teal-500"></div>
+                <span class="text-4xl block mb-3">📅</span>
+                <h4 class="font-bold text-teal-800 text-xl mb-2">Abertura de Agenda</h4>
+                <p id="msg-limite-agenda" class="text-teal-700 font-medium text-[15px] leading-relaxed">
                     Calculando limite de agendamento...
                 </p>
             </div>
@@ -350,9 +351,9 @@
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div class="group">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Qual é a data gostaria de reservar? 🗓️</label>
-                        <!-- Agora recebe a limitação via JS -->
-                        <input type="date" name="data_limpeza" class="input-base text-slate-600" required>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2 text-teal-700">Qual é a data gostaria de reservar? 🗓️</label>
+                        <!-- Evento onchange para disparar alerta na hora se o cliente digitar data incorreta -->
+                        <input type="date" name="data_limpeza" class="input-base text-slate-800 font-bold border-teal-300 bg-teal-50 focus:ring-teal-500" onchange="validarDataImediata(this)" required>
                     </div>
                     <div class="group">
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Qual o horário de Início? 🕒</label>
@@ -401,8 +402,8 @@
                 </div>
 
                 <div id="checkout-time-box" class="hidden group">
-                    <label class="block text-sm font-bold text-teal-600 mb-2">Qual é o horário limite de saída (check-out) dos hóspedes anteriores?</label>
-                    <input type="text" name="horario_checkout" placeholder="Ex: 11:00" class="input-base">
+                    <label class="block text-sm font-bold text-teal-600 mb-2">Qual é o horário limite de saída (check-out) dos hóspedes anteriores? ⏰</label>
+                    <input type="time" name="horario_checkout" class="input-base text-slate-600">
                 </div>
 
                 <div class="group">
@@ -414,8 +415,8 @@
                 </div>
 
                 <div id="checkin-time-box" class="hidden group">
-                    <label class="block text-sm font-bold text-teal-600 mb-2">Qual o horário previsto de entrada (check-in) dos novos hóspedes?</label>
-                    <input type="text" name="horario_checkin" placeholder="Ex: 15:00" class="input-base">
+                    <label class="block text-sm font-bold text-teal-600 mb-2">Qual o horário marcado de entrada (check-in) dos novos hóspedes? ⏰</label>
+                    <input type="time" name="horario_checkin" class="input-base text-slate-600">
                 </div>
 
                 <div class="group">
@@ -555,7 +556,8 @@
             const ano = hoje.getFullYear();
             const mes = hoje.getMonth();
             
-            // Lógica: mês atual + 3 com dia "0" retorna o ÚLTIMO dia do mês 2 meses para frente
+            // Mês atual (0) + 3 meses para frente, pegando o dia "0" (que significa o último dia do mês anterior)
+            // Ex: Se estamos em Julho(6), mes + 3 = Outubro(9). O dia "0" de Outubro é o último dia de Setembro.
             const dataMax = new Date(ano, mes + 3, 0); 
             
             // Salva na memória global para validar na hora de enviar
@@ -565,7 +567,7 @@
             const opcoesTexto = { day: 'numeric', month: 'long', year: 'numeric' };
             const textoMax = dataMax.toLocaleDateString('pt-BR', opcoesTexto);
             
-            document.getElementById('msg-limite-agenda').innerHTML = `A agenda está aberta para pré-agendamentos até <strong>${textoMax}</strong>.`;
+            document.getElementById('msg-limite-agenda').innerHTML = `A agenda está aberta para agendamentos até <strong>${textoMax}</strong>.`;
 
             // Aplica os limites físicos no input do calendário
             const minIso = formatarDataIsoLocal(hoje);
@@ -575,6 +577,27 @@
             if(inputData) {
                 inputData.min = minIso;
                 inputData.max = maxIso;
+            }
+        }
+
+        // VALIDAÇÃO IMEDIATA (Anti-espertinhos que digitam a data no teclado)
+        function validarDataImediata(input) {
+            if(!input.value) return;
+
+            const dataEscolhidaObj = new Date(input.value + "T12:00:00"); 
+            const hojeBase = new Date();
+            hojeBase.setHours(0,0,0,0);
+
+            if (dataEscolhidaObj < hojeBase) {
+                alert("Bloqueado: Não é possível agendar em datas que já passaram.\nPor favor, escolha uma data a partir de hoje.");
+                input.value = ""; // Apaga o campo instantaneamente
+                return;
+            }
+
+            if (window.dataLimiteAgenda && dataEscolhidaObj > window.dataLimiteAgenda) {
+                alert(`Bloqueado: A data selecionada não está disponível.\n\nA nossa agenda encontra-se aberta apenas até o dia ${window.dataLimiteAgenda.toLocaleDateString('pt-BR')}.`);
+                input.value = ""; // Apaga o campo instantaneamente
+                return;
             }
         }
 
@@ -768,20 +791,13 @@
                 return;
             }
 
-            // ==========================================
-            // VALIDAÇÃO DUPLA DA AGENDA (Evita datas bloqueadas)
-            // ==========================================
+            // Validação final de segurança na hora do clique do botão
             const dataEscolhidaObj = new Date(dataLimpeza + "T12:00:00"); 
             const hojeBase = new Date();
             hojeBase.setHours(0,0,0,0);
 
-            if (dataEscolhidaObj < hojeBase) {
-                alert("Nenhuma reserva foi feita. Não é possível realizar pré-agendamentos em datas que já passaram.");
-                return;
-            }
-
-            if (window.dataLimiteAgenda && dataEscolhidaObj > window.dataLimiteAgenda) {
-                alert(`Nenhuma reserva foi feita.\n\nA data selecionada não está disponível. A agenda de pré-agendamentos encontra-se aberta apenas até o dia ${window.dataLimiteAgenda.toLocaleDateString('pt-BR')}.`);
+            if (dataEscolhidaObj < hojeBase || (window.dataLimiteAgenda && dataEscolhidaObj > window.dataLimiteAgenda)) {
+                alert("Nenhuma reserva foi feita. A data selecionada é inválida ou está fora do período de abertura da agenda.");
                 return;
             }
             
